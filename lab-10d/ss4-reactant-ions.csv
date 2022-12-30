@@ -1,0 +1,7 @@
+Product,First Reactant Ion,Second Reactant Ion,First Reactant,Second Reactant,Soluble?
+Na2CO3,Na2,CO3,NaOH,K2CO3,TRUE
+2KOH,2K,OH,K2CO3,NaOH,TRUE
+2NaNO3,2Na,NO3,NaOH,Sr(NO3)2,TRUE
+Sr(OH)2,Sr,(OH)2,Sr(NO3)2,NaOH,TRUE
+2KNO3,2K,NO3,K2CO3,Sr(NO3)2,TRUE
+SrCO3,Sr,CO3,Sr(NO3)2,K2CO3,FALSE
