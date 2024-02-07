@@ -1,0 +1,106 @@
+---
+title: chem123 exp9 analysis
+format: pdf
+execute:
+  echo: false
+  warning: false
+jupyter: python3
+---
+
+## Abstract
+The amount of vitamin C per 
+
+
+
+```{python}
+#| tags: []
+import pandas as pd
+import matplotlib.pyplot as plt
+```
+
+```{python}
+pd.set_option('display.float_format', '{:.4g}'.format)
+```
+
+```{python}
+# define constants, read in data
+KIO3_MOLECULAR_WEIGHT = 214
+ASCORBIC_ACID_MOLECULAR_WEIGHT = 176.1
+raw_data = pd.read_csv('chem123-exp9-data.csv')
+raw_data
+```
+
+```{python}
+# rename control samples for easier sorting/aggregation.
+raw_data['Sample'] = raw_data['Sample'].str.replace(
+    r'(Control)[\s][\w()]+',
+    '0_Control',
+    regex=True
+)
+raw_data
+```
+
+```{python}
+# Calculate mg of ascorbic acid.
+raw_data['$KIO_3$ volume (mol)'] = (
+    raw_data['$KIO_3$ volume (g)'] / KIO3_MOLECULAR_WEIGHT
+)
+raw_data['Moles of $KIO_3$ per mL of titrant'] = (
+    raw_data['$KIO_3$ volume (mol)'] / 250
+)
+raw_data['Moles of $KIO_3$ used'] = (
+    raw_data['Moles of $KIO_3$ per mL of titrant'] *
+    raw_data['$KIO_3$ titrant Used (mL)']
+)
+raw_data['Moles of ascorbic acid'] = (
+    raw_data['Moles of $KIO_3$ used'] * 3
+)
+raw_data['Amount of ascorbic acid (mg)'] = (
+    raw_data['Moles of ascorbic acid'] *
+    ASCORBIC_ACID_MOLECULAR_WEIGHT *
+    1000
+)
+raw_data
+```
+
+```{python}
+# sort data in order of samples
+sorted_data = raw_data.sort_values(by=['Sample'])
+sorted_data
+```
+
+```{python}
+# for titrations with multiple trials, average the results
+cleaned_data = sorted_data \
+                    .groupby('Sample') \
+                    .mean() \
+                    .reset_index() \
+                    .filter([
+                        'Sample',
+                        'Amount of ascorbic acid (mg)'
+                    ])
+# rename control column for clarity, now that sorting is complete.
+cleaned_data['Sample'] = cleaned_data['Sample'].str.replace(
+    '0_Control',
+    'Control',
+    regex=True
+)
+display(cleaned_data)
+```
+
+```{python}
+results_graph = plt.figure(figsize=[12,6])
+
+plt.plot(
+    cleaned_data['Sample'],
+    cleaned_data['Amount of ascorbic acid (mg)'],
+    marker='o'
+)
+
+plt.xlabel('Sample')
+plt.ylabel('Amount of ascorbic acid (mg)')
+plt.grid(visible=True)
+plt.title('Ascorbic acid per sample')
+plt.show()
+```
+
