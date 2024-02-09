@@ -1,0 +1,213 @@
+---
+title: chem123 exp9 analysis
+filters: [../../../heart-hands/06.writing/remove-title-filter.lua]
+format: pdf
+linestretch: 1.25
+fontsize: "11pt"
+whitespace: small
+geometry:
+    - top=1in
+    - bottom=1in
+    - left=1in
+    - right=1in
+mainfont: "Times New Roman"
+execute:
+  echo: false
+  output: false
+  warning: false
+jupyter: python3
+bibliography: chem123-exp9-lab-report.bib
+csl: ../../../heart-hands/06.writing/citestyles/acs.csl
+---
+
+```{python}
+#| tags: []
+import pandas as pd
+import matplotlib.pyplot as plt
+```
+
+```{python}
+# --- document setup ---
+# define constants, set dataframe display settings
+pd.set_option('display.float_format', '{:.2g}'.format)
+# pd.set_option("display.precision", 10)
+KIO3_MOLECULAR_WEIGHT = 214
+ASCORBIC_ACID_MOLECULAR_WEIGHT = 176.1
+```
+
+## Abstract
+\vspace{-12pt}
+Using iodometric titration, the effect of microwaving on vitamin C content in apple juice was investigated. By microwaving apple juice samples in 10 second increments, vitamin C degradation after microwave exposure was studied. No clear correlation between longer microwave times and lower vitamin C levels was found.
+
+\vspace{-12pt}
+## Introduction
+\vspace{-12pt}
+Fruit juices often contain vitamin C, which has health benefits as an antioxidant [@nussbaumExperimentOverview]. However, it easily degrades after exposure to oxygen ($O_2$). Because of this, it is important to ensure fruit juice is not subjected to anything that may accelerate vitamin C degradation before it is consumed, such as microwave exposure. Previous studies have shown that microwaving fruit juice leads to a high level of vitamin C degradation [@vikramThermalDegradationKinetics2005], as microwave heating is not temperature-specific and can easily lead to high amounts of heat exposure.
+
+In this experiment, the effect of microwave exposure on vitamin C in apple juice was studied. The goal of the study was to determine if previous results showing high vitamin C degradation in other juices applied to apple juice. Samples of apple juice were microwaved in 10 second increments, and then titrated with potassium iodate ($KIO_3$) to determine the remaining amount of vitamin C.
+
+```{python}
+# read in data
+raw_data = pd.read_csv('chem123-exp9-data.csv')
+raw_data
+```
+
+\vspace{-12pt}
+## Experimental
+\vspace{-12pt}
+A standard solution of $4.7684 \cdot 10^{-4}M$ $KIO_3$ was prepared to use as the titrant. The apple juice was partitioned into 25.00mL samples, with 2 kept as controls with no microwave exposure. The rest were microwaved in pairs at increasing 10 second increments, from 10 seconds to 80 seconds, before being cooled to room temperature. Several substances were added before titration to facilitate reaction and ease of endpoint detection: approximately 100mL of deionized water, 5mL of $2M$ $HCl$ to reduce pH, 5mL of $0.12M$ $KI$, and 2mL of starch solution. Approximately 1.88 mL of EDTA was also added to prevent any $Fe$ or $Cu$ ions present from disrupting the reaction. The samples were then titrated to find the volume of $KIO_3$ needed to react with the remaining vitamin C. From this, the amount of remaining vitamin C was determined for each pair of samples and averaged.
+
+\vspace{-12pt}
+## Results
+\vspace{-12pt}
+```{python}
+# rename control samples for easier sorting/aggregation.
+raw_data['Sample'] = raw_data['Sample'].str.replace(
+    r'(Control)[\s][\w()]+',
+    '0_Control',
+    regex=True
+)
+raw_data
+```
+
+```{python}
+# Calculate mg of ascorbic acid.
+raw_data['$KIO_3$ volume (mol)'] = (
+    raw_data['$KIO_3$ volume (g)'] / KIO3_MOLECULAR_WEIGHT
+)
+raw_data['Moles of $KIO_3$ per mL of titrant'] = (
+    raw_data['$KIO_3$ volume (mol)'] / 250
+)
+raw_data['Moles of $KIO_3$ used'] = (
+    raw_data['Moles of $KIO_3$ per mL of titrant'] *
+    raw_data['$KIO_3$ titrant Used (mL)']
+)
+raw_data['Moles of ascorbic acid'] = (
+    raw_data['Moles of $KIO_3$ used'] * 3
+)
+raw_data['Amount of Vitamin C (mg)'] = (
+    raw_data['Moles of ascorbic acid'] *
+    ASCORBIC_ACID_MOLECULAR_WEIGHT *
+    1000
+)
+raw_data
+```
+
+```{python}
+# sort data in order of samples
+sorted_data = raw_data.sort_values(by=['Sample'])
+sorted_data
+```
+
+```{python}
+#| output: true
+#| tbl-cap: Vitamin C amounts per microwave exposure time
+
+# for titrations with multiple trials, average the results
+cleaned_data = sorted_data \
+                    .groupby('Sample') \
+                    .mean() \
+                    .reset_index() \
+                    .filter([
+                        'Sample',
+                        'Amount of Vitamin C (mg)'
+                    ])
+# rename control column for clarity, now that sorting is complete.
+cleaned_data['Sample'] = cleaned_data['Sample'].str.replace(
+    '0_Control',
+    'Control',
+    regex=True
+)
+visual_data = cleaned_data.copy()
+visual_data['Amount of Vitamin C (mg)'] = visual_data['Amount of Vitamin C (mg)'].map(lambda x: '{0:.2f}'.format(x))
+display(
+    visual_data.style \
+                .hide_index() \
+                .set_table_attributes("class='dataframe'")
+)
+```
+
+The amounts of vitamin C remaining in each sample roughly decrease as microwave exposure increases, although there is no clear correlation.
+
+\vspace{-12pt}
+## Discussion
+\vspace{-12pt}
+The amount of vitamin C remaining was highly inconsistent between samples. These results show no clear correlation between microwave exposure and vitamin C degradation in apple juice, which does not support the hypothesis.  However, this does not line up with previous findings [@vikramThermalDegradationKinetics2005] for other juices. The data is likely flawed, in part due to several experimental errors. Firstly, each group member carried out the experiment with different concentrations of $KIO_3$ standard solution. This led to confusion during the experiment around what colour the titration endpoint should be and how quickly it should be reached. Initial attempts to prevent this error involved standardizing the $KIO_3$ concentration among all group members, based on the vitamin C content listed on the apple juice container. However, it was later found that the vitamin C content was much higher than stated, causing the $KIO_3$ standard solutions to be too weak. As a result, the standard solutions had to be remade, leading to a significant reduction in time for the experiment and inconsistent measurements. Additionally, only 1 titration was done for most of the microwave times. It was previously planned that 2 samples would be titrated per 10 second microwave increment. However, due to time limitations caused by the remaking of $KIO_3$ standard solution, often only one of the two samples per increment was titrated.
+
+Future reproductions of this experiment could start with a $KIO_3$ concentration equal to *double* the listed amount on the apple juice bottle. This would ensure each researcher uses a standard amount that is strong enough to produce meaningful results through titration, preventing the need to remake the solution. Additionally, multiple titrations could be done for each microwaving increment, which could help balance out titration errors.
+
+\vspace{-12pt}
+## Conclusion
+\vspace{-12pt}
+No correlation between length of microwave exposure and degradation of vitamin C in apple juice was found, contradicting the initial hypothesis that longer exposure would lead to higher levels of degradation. However, this does not line up with previous findings, likely due to several experimental errors.
+
+\vspace{-12pt}
+## Bibliography
+::: {#refs}
+:::
+
+## Appendix
+
+### Example calculations
+
+#### Calculation for concentration of standard solution and amount of $KIO_3$ required
+*Note: as detailed in the discussion, this calculation was later found to be flawed as the apple juice contained significantly higher levels of vitamin C than listed.*
+
+- Daily Value % of vitamin C per 250mL of apple juice: $67\%$
+- Amount of vitamin C (mg) per 250mL: $0.67 \cdot 90mg = 60.3mg$
+- Amount of vitamin C (mg) per 25mL: $\dfrac{60.3mg}{10} = 6.03mg$
+- Amount of vitamin C (moles) per 25 mL: $\dfrac{0.00603 g}{176.124 g} = 3.42372 \cdot 10^{-5}$ mol
+- moles of $KIO_3$ (potassium iodate) based on 3:1 ratio: $\dfrac{3.42372 \cdot 10^{-5}mol}{3} = 1.14124 \cdot 10^{-5}$ mol
+- Required concentration for 25mL $KIO_3$ solution: $\dfrac{1.14124 \cdot 10^{-5}mol}{0.025L} = 4.56496 \cdot 10^{-4}M$
+- Moles of $KIO_3$ required to make 250mL standard solution, based on previous concentration: $4.56496 \cdot 10^{-4}M \cdot 0.250L = 1.14124 \cdot 10^{-4}$ mol
+- grams of $KIO_3$ required: $1.14124 \cdot 10^{-4}mol \cdot 214g = 0.02442g$
+
+
+#### Calculation for concentration and mass of vitamin C, post-titration
+
+- Amount of $KIO_3$ in titrant (g): $0.0903g$
+- Amount of $KIO_3$ in titrant (mol): $\dfrac{0.0903}{214} = 4.2196 \cdot 10^{-4} mol$
+- Moles of $KIO_3$ per mL of titrant: $\dfrac{4.2196 \cdot 10^{-4} mol}{250} = 1.68785 \cdot 10^{-6} mol/mL$
+- Moles of $KIO_3$ used in titration: $1.68785 \cdot 10^{-6} mol/mL \cdot 16.54mL = 2.78 \cdot 10^{-5}$
+- Amount of vitamin C (mol): $2.78 \cdot 10^{-5} mol \cdot 3 = 8.37 \cdot 10^{-5}mol$
+- Amount of vitamin C (mg): $8.37 \cdot 10^{-5}mol \cdot 176.1g/mol \cdot 1000 = 14.74mg$
+```{python}
+# Calculate mg of ascorbic acid.
+raw_data['$KIO_3$ volume (mol)'] = (
+    raw_data['$KIO_3$ volume (g)'] / KIO3_MOLECULAR_WEIGHT
+)
+raw_data['Moles of $KIO_3$ per mL of titrant'] = (
+    raw_data['$KIO_3$ volume (mol)'] / 250
+)
+raw_data['Moles of $KIO_3$ used'] = (
+    raw_data['Moles of $KIO_3$ per mL of titrant'] *
+    raw_data['$KIO_3$ titrant Used (mL)']
+)
+raw_data['Moles of ascorbic acid'] = (
+    raw_data['Moles of $KIO_3$ used'] * 3
+)
+raw_data['Amount of Vitamin C (mg)'] = (
+    raw_data['Moles of ascorbic acid'] *
+    ASCORBIC_ACID_MOLECULAR_WEIGHT *
+    1000
+)
+raw_data
+```
+
+## Graph of results
+```{python}
+#| output: true
+results_graph = plt.figure(figsize=[12,6])
+
+plt.plot(
+    cleaned_data['Sample'],
+    cleaned_data['Amount of Vitamin C (mg)'],
+    marker='o'
+)
+
+plt.xlabel('Sample')
+plt.ylabel('Amount of Vitamin C (mg)')
+plt.grid(visible=True)
+plt.title('Vitamin C amounts per microwave exposure time')
+plt.show()
+```
