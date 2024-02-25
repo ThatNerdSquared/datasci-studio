@@ -1,0 +1,202 @@
+---
+title: chem123 exp12 analysis
+filters: [../../../heart-hands/06.writing/remove-title-filter.lua]
+format: pdf
+linestretch: 1.25
+fontsize: "11pt"
+whitespace: small
+geometry:
+    - top=1in
+    - bottom=1in
+    - left=1in
+    - right=1in
+mainfont: "Times New Roman"
+execute:
+  echo: false
+  output: false
+  warning: false
+jupyter: python3
+bibliography: chem123-exp12-lab-report.bib
+csl: ../../../heart-hands/06.writing/citestyles/acs.csl
+---
+
+```{python}
+import pandas as pd
+import matplotlib.pyplot as plt
+from dataclasses import dataclass
+```
+
+```{python}
+# define constants
+DROP_VOLUME = (3.6756 / 100) / 1000 # L
+STANDARD_SAMPLE_SIZE = 25 / 1000 # L
+# useful datatype for handling values alongside their units
+@dataclass
+class ValueWithUnit:
+    value: float
+    unit: str
+
+    def fmt(self) -> str:
+        '''
+        Returns the value as a string, to four sig figs with unit.
+        '''
+        return '{0:.4f}{1}'.format(self.value, self.unit)
+```
+
+## Abstract
+Using titration, the viability of a phosphate buffer as a model for blood's buffering capability was investigated. Through titration, the acid and base buffer capacities of the phosphate buffer were determined. The phosphate buffer was found to have a similar buffer capacity to the blood buffer, making it a useful model.
+
+## Introduction
+The human body maintains blood at a $pH$ range of 7.35-7.45 to properly function and avoid conditions such as acidosis [@nussbaumExperiment12Overview]. To do this, it contains a carbonic acid buffer, shown to have $pH \approx 7.40$ and able to minimize $pH$ change to $-0.167$ when exposed to $20mmol$ of hydrochloric acid [@andersenPHlogPCO2Acidbase1962]. While studying these properties is important for the development of treatments to acidosis, obtaining human blood samples can be difficult, and carbonic acid buffers are unstable at room temperature due to $CO_2$ loss. Thus, other buffers must be used to model blood's buffering behaviour.
+
+In this experiment, it was hypothesized that a phosphate buffer (made from $H_2PO_4^-$ and $HPO_4^{2-}$) with similar $pH$ and acid-base concentrations as blood would have a similar buffer capacity. The buffer capacity of the phosphate buffer was determined through dropwise titration using $0.1M HCl$ and $NaOH$. As the phosphate buffer had similar $pH$ and acid-base concentrations to blood, it was expected to have similar buffer capacities to blood [@andersenPHlogPCO2Acidbase1962].
+
+## Experimental
+A Microlab was connected to a drop counter and $pH$ sensor, and configured to take a $pH$ reading each time a drop was detected. The drop dispenser was calibrated in order to determine the volume of each drop. 100mL of phosphate buffer with $pH = 7.45$ was prepared, using roughly 35.9mL of $0.5M H_2PO_4^-$ and 17.7mL of $1.0M NaOH$.
+
+Then two titrations were performed, each with 25.00mL samples of buffer. The first titration transferred $0.1M HCl$ dropwise until the sample had $pH = 6.45$, the second transferred $0.1 NaOH$ dropwise until the sample had $ph = 8.45$. Titration curves were created using the Microlab, and buffer capacities determined from the drop count. A third titration was performed to simulate the treatment of acidosis. For this, 25.00mL of a "patient trial blood" sample was used, made from phosphate buffer at $pH = 7.029$ to model the blood of a patient undergoing acidosis. $0.2M Na_2HPO_4$ was titrated dropwise into this sample until it was restored to $pH = 7.45$. An additional titration curve was obtained from this titration.
+
+## Results
+
+The acid buffer capacity of the phosphate buffer was found to be larger than the base buffer capacity.
+
+## Discussion
+## Conclusion
+## Bibliography
+::: {#refs}
+:::
+
+## Appendix
+
+
+***MARK UP THE GRAPH REGIONS***
+
+
+### Example Calculations
+
+#### [D2] Acid buffer capacity
+Using the formula:
+$$
+\dfrac{V_a \cdot C}{V_b}
+$$
+where:
+
+- $V_a$ is the volume of the acid/base added
+- $C$ is the concentration of the acid/base added
+- $V_b$ is the volume of the buffer
+
+```{python}
+VOLUME_HCl_ADDED = 685 * DROP_VOLUME # L
+ACID_BUFFER_CAPACITY = ValueWithUnit(
+    (VOLUME_HCl_ADDED * 0.1) / STANDARD_SAMPLE_SIZE,
+    'M'
+)
+f'acid buffer capacity: {ACID_BUFFER_CAPACITY.fmt()}'
+```
+
+#### [D3] Base buffer capacity
+```{python}
+VOLUME_NaOH_ADDED = 176 * DROP_VOLUME # L
+BASE_BUFFER_CAPACITY = ValueWithUnit(
+    (VOLUME_NaOH_ADDED * 0.1) / STANDARD_SAMPLE_SIZE,
+    'M'
+)
+f'base buffer capacity: {BASE_BUFFER_CAPACITY.fmt()}'
+```
+
+#### [D4] Which buffer capacity is higher?
+Given that `{python} ACID_BUFFER_CAPACITY.fmt()` > `{python} BASE_BUFFER_CAPACITY.fmt()`, the acid buffer capacity of blood is therefore greater than the base buffer capacity of blood.
+
+#### [D5] Restoration Solution required to reverse acidosis for 25mL sample of "Patient Trial" blood
+```{python}
+RS_USED = ValueWithUnit(695 * DROP_VOLUME * 1000, 'mL')
+```
+`{python} RS_USED.fmt()` of restoration solution was used.
+
+#### [D6] Which component of the phosphate buffer comprises the Restoration Solution?
+Since the Restoration Solution raises the $pH$, we can assume that it is made out of the basic component of the phosphate buffer, aka $HPO_4^{2-}$.
+
+#### [D7] Amount of Restoration Solution required to restore 7.0L of patient trial blood to $pH = 7.450$
+
+```{python}
+EXPERIMENTAL_PH_CHANGE = ValueWithUnit(7.453 - 7.029, '')
+REQUIRED_PH_CHANGE = ValueWithUnit(7.450 - 7.029, '')
+mL_TO_RAISE_1_UNIT = ValueWithUnit(
+    RS_USED.value / EXPERIMENTAL_PH_CHANGE.value,
+    'mL'
+)
+AMOUNT_NEEDED_FOR_25mL = ValueWithUnit(
+    mL_TO_RAISE_1_UNIT.value * REQUIRED_PH_CHANGE.value,
+    'mL'
+)
+AMOUNT_NEEDED_FOR_7L = ValueWithUnit(
+    AMOUNT_NEEDED_FOR_25mL.value * 40 * 7 / 1000, 'L'
+)
+AMOUNT_NEEDED_FOR_7L.fmt()
+```
+
+From original experiment:
+
+- $pH = 7.029$ for the patient trial blood.
+- $7.453 - 7.029 =$ `{python} EXPERIMENTAL_PH_CHANGE.fmt()` pH change when `{python} RS_USED.fmt()` of Restoration Solution added.
+
+We can determine:
+
+- to raise back to $pH = 7.450$: $pH$ needs to be raised by `{python} REQUIRED_PH_CHANGE.fmt()`.
+- to raise 25mL of trial blood by 1 pH unit: `{python} RS_USED.fmt()` / `{python} EXPERIMENTAL_PH_CHANGE.fmt()` = `{python} mL_TO_RAISE_1_UNIT.fmt()` of Restoration Solution
+- to raise 25mL of trial blood by `{python} REQUIRED_PH_CHANGE.fmt()`: `{python} mL_TO_RAISE_1_UNIT.fmt()` $\cdot$ `{python} REQUIRED_PH_CHANGE.fmt()` = `{python} AMOUNT_NEEDED_FOR_25mL.fmt()`
+- to raise 7L of trial blood by `{python} REQUIRED_PH_CHANGE.fmt()`: `{python} AMOUNT_NEEDED_FOR_25mL.fmt()` $\cdot 40 \cdot 7 =$ `{python} AMOUNT_NEEDED_FOR_7L.fmt()`
+
+#### [D8] ER Chart
+```{python}
+er_chart = pd.DataFrame({
+    'pH': [7.00, 7.10, 7.20, 7.30, 7.40]
+})
+WEIGHTS = [50, 55, 60, 65, 70, 75, 80]
+```
+
+Let us use a 50kg patient at $pH = 7.2$ for the example calculation.
+
+First, we can convert the patient weight in kg to blood volume in litres, by multiplying it by 0.1: $50 \cdot 0.1 = 5.00L$.
+```{python}
+def body_mass_to_blood_volume(
+    body_mass: int = '0'
+) -> ValueWithUnit:
+    return ValueWithUnit(body_mass * 0.1, 'L')
+```
+
+We can reuse our previously calculated value for the amount of Restoration Solution required to raise 25mL of blood by 1 pH unit: `{python} mL_TO_RAISE_1_UNIT.fmt()`.
+
+```{python}
+def calculate_rs_needed(
+    starting_pH: float,
+    blood_volume: ValueWithUnit
+) -> ValueWithUnit:
+    AMOUNT_NEEDED_FOR_25mL = ValueWithUnit(
+        mL_TO_RAISE_1_UNIT.value * (7.45 - starting_pH),
+        'mL'
+    )
+    AMOUNT_NEEDED = ValueWithUnit(
+        AMOUNT_NEEDED_FOR_25mL.value
+        * 40
+        * blood_volume.value / 1000, 'L'
+    )
+    return AMOUNT_NEEDED.fmt()
+```
+
+Then the amount needed to raise 25mL of the blood by $7.45 - 7.2 = 0.25$ pH: `{python} mL_TO_RAISE_1_UNIT.fmt()` $\cdot 0.25 =$ `{python} ValueWithUnit(mL_TO_RAISE_1_UNIT.value * 0.25, 'mL').fmt()`.
+
+Multiplying that by 40 to get the amount needed to raise 1L of the blood by our desired amount, and then multiplying by the blood volume to get our final amount: `{python} ValueWithUnit(mL_TO_RAISE_1_UNIT.value * 0.25, 'mL').fmt()` $\cdot 40 \cdot 5L =$ `{python} calculate_rs_needed(7.2, ValueWithUnit(5.00, 'L'))`.
+
+We can repeat this for each patient weight and starting $pH$ to create our chart:
+```{python}
+#| output: true
+for weight in WEIGHTS:
+    er_chart[f'{weight} kg'] = er_chart['pH'].map(
+        lambda x: calculate_rs_needed(
+            x,
+            body_mass_to_blood_volume(weight)
+        )
+    )
+er_chart.style.hide_index()
+```
