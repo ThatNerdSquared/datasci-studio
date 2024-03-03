@@ -53,7 +53,7 @@ Using titration, the viability of a phosphate buffer as a model for blood's buff
 \vspace{-12pt}
 The human body maintains blood at a $pH$ range of 7.35-7.45 to properly function and avoid conditions such as acidosis [@nussbaumExperiment12Overview]. To do this, it contains a carbonic acid buffer, shown to have $pH \approx 7.40$ and able to minimize $pH$ change to $-0.167$ when exposed to $20mmol$ of hydrochloric acid [@andersenPHlogPCO2Acidbase1962]. While studying these properties is important for the development of treatments to acidosis, obtaining human blood samples can be difficult, and carbonic acid buffers are unstable at room temperature due to $CO_2$ loss. Thus, other buffers must be used to model blood's buffering behaviour.
 
-In this experiment, it was hypothesized that a phosphate buffer (made from $H_2PO_4^-$ and $HPO_4^{2-}$) with similar $pH$ and acid-base concentrations as blood would have a similar buffer capacity. The buffer capacity of the phosphate buffer was determined through dropwise titration using $0.1M HCl$ and $NaOH$. As the phosphate buffer had similar $pH$ and acid-base concentrations to blood, it was expected to have similar buffer capacities to blood [@andersenPHlogPCO2Acidbase1962].
+In this experiment, it was hypothesized that a phosphate buffer (made from $H_2PO_4^-$ and $HPO_4^{2-}$) with similar $pH$ and acid-base concentrations as blood would be a viable model for the blood buffer, having similar buffer capacity and responses to additional acid/base. The buffer capacity of the phosphate buffer was determined through dropwise titration using $0.1M HCl$ and $NaOH$. As the phosphate buffer had similar $pH$ and acid-base concentrations to blood, it was expected to have similar buffer capacities to blood [@andersenPHlogPCO2Acidbase1962].
 
 ```{python}
 raw_data = pd.read_csv('chem123-exp12-data.csv') \
@@ -65,7 +65,7 @@ raw_data = pd.read_csv('chem123-exp12-data.csv') \
 \vspace{-12pt}
 A Microlab was connected to a drop counter and $pH$ sensor, and configured to take a $pH$ reading each time a drop was detected. The drop dispenser was calibrated in order to determine the volume of each drop. 100mL of phosphate buffer with $pH = 7.45$ was prepared, using roughly 35.9mL of $0.5M H_2PO_4^-$ and 17.7mL of $1.0M NaOH$.
 
-Then two titrations were performed, each with 25.00mL samples of buffer. The first titration transferred $0.1M HCl$ dropwise until the sample had $pH = 6.45$, the second transferred $0.1 NaOH$ dropwise until the sample had $ph = 8.45$. Titration curves were created using the Microlab, and buffer capacities determined from the drop count. A third titration was performed to simulate the treatment of acidosis. For this, 25.00mL of a "patient trial blood" sample was used, made from phosphate buffer at $pH = 7.029$ to model the blood of a patient undergoing acidosis. $0.2M Na_2HPO_4$ was titrated dropwise into this sample until it was restored to $pH = 7.45$. An additional titration curve was obtained from this titration.
+Then two titrations were performed, each with 25.00mL samples of buffer. The first titration transferred $0.1M HCl$ dropwise into the sample until it reached $pH = 6.45$, the second transferred $0.1M NaOH$ dropwise until the sample had $pH = 8.45$. Titration curves were created using the Microlab, and buffer capacities determined from the drop count. A third titration was performed to simulate the treatment of acidosis. For this, 25.00mL of a "patient trial blood" sample was used, made from phosphate buffer at $pH = 7.029$ to model the blood of a patient undergoing acidosis. $0.2M Na_2HPO_4$ was titrated dropwise into this sample until it was restored to $pH = 7.45$. An additional titration curve was obtained from this titration.
 
 \vspace{-12pt}
 ## Results
@@ -91,7 +91,7 @@ BASE_BUFFER_CAPACITY = ValueWithUnit(
 
 ```{python}
 #| output: true
-#| tbl-cap: Vitamin C amounts per microwave exposure time
+#| tbl-cap: Buffer capacities for the tested phosphate buffer
 results = pd.DataFrame({
     'Acid Buffer Capacity': [ACID_BUFFER_CAPACITY.fmt()],
     'Base Buffer Capacity': [BASE_BUFFER_CAPACITY.fmt()],
@@ -104,11 +104,11 @@ The acid buffer capacity of the phosphate buffer was found to be larger than the
 \vspace{-12pt}
 ## Discussion
 \vspace{-12pt}
-The phosphate buffer tested in this experiment was shown to have similar properties to the buffer in blood. As it was made with similar $pH$ and acid-base concentrations as blood, the experimental tests focused on raising and lowering the $pH$ of the phosphate buffer in order to see if it had a similar buffer capacity to blood. The buffer in blood has a significantly higher acid buffer capacity, due to processes in the body creating more acidic byproducts than basic ones [@nussbaumExperiment12Overview]. The phosphate buffer tested in this experiment was found to behave similarly, as its acid buffer capacity was almost 4 times greater than the base buffer capacity. This is in line with results from previous studies, which show that for the same amount of acid and base added to blood, the additional acid creates a lesser change in $pH$ [@andersenPHlogPCO2Acidbase1962].
+The phosphate buffer tested in this experiment was shown to have similar properties to the buffer in blood. As it was made with similar $pH$ and acid-base concentrations as blood, the experimental tests focused on raising and lowering the $pH$ of the phosphate buffer in order to see if it had a similar buffer capacity to blood. The buffer in blood has a significantly higher buffer capacity for acids compared to bases, due to processes in the body creating more acidic byproducts than basic ones [@nussbaumExperiment12Overview]. The phosphate buffer tested in this experiment was found to behave similarly, as its acid buffer capacity was almost 4 times greater than the base buffer capacity. This is in line with results from previous studies, which show that for the same amount of acid and base added to blood, the additional acid creates a lesser change in $pH$ [@andersenPHlogPCO2Acidbase1962].
 
 The phosphate buffer also served as a viable model for modeling different patient blood conditions and possible treatments. The additions of $0.1M HCl$ and $0.1M NaOH$ to samples of the phosphate buffer simulated acidosis and alkalosis respectively. The test with $0.1M HCl$ in particular simulated the effects of gradual blood acidification that would take place in the body as $CO_2$ is produced. The collected titration curves showed the phosphate buffer was able to accurately model the blood buffer's behaviour of minimizing $pH$ changes within a certain range. Similarly, the titration with "patient trial blood" showed that the treatment of acidosis could be properly modeled using the phosphate buffer. The basic component of the buffer was gradually added to the "trial blood" sample, leading to a successful raising of the $pH$, similar to how bicarbonate is administered to treat acidosis in an emergency room setting.
 
-Overall, the results from the experiment supported the hypothesis. The similar buffer capacity and response to additional acid & base exhibited by the phosphate buffer make it a useful model for the buffer in blood. Future improvements to this experiment could repeat the tests conducted multiple times. While the data from each of the tests matched the expected results from previous studies, each test was only conducted once, and as such the accuracy of the data could be improved by collecting more data points. 
+Overall, the results from the experiment supported the hypothesis. The similar buffer capacity and response to additional acid & base exhibited by the phosphate buffer make it a useful model for the buffer in blood. Future improvements to this experiment could repeat the titrations conducted multiple times. While the data from each of the titrations matched the expected results from previous studies, each titration was only conducted once, and as such the accuracy of the data could be improved by collecting more data points. 
 
 \vspace{-12pt}
 ## Conclusion
@@ -249,7 +249,7 @@ We can determine:
 #### [D8] ER Chart
 ```{python}
 er_chart = pd.DataFrame({
-    'pH': [7.00, 7.10, 7.20, 7.30, 7.40]
+    'pH': ['7.0', '7.1', '7.2', '7.3', '7.4']
 })
 WEIGHTS = [50, 55, 60, 65, 70, 75, 80]
 ```
@@ -293,7 +293,7 @@ We can repeat this for each patient weight and starting $pH$ to create our chart
 for weight in WEIGHTS:
     er_chart[f'{weight} kg'] = er_chart['pH'].map(
         lambda x: calculate_rs_needed(
-            x,
+            float(x),
             body_mass_to_blood_volume(weight)
         )
     )
