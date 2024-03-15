@@ -1,0 +1,115 @@
+---
+title: chem123 exp10 analysis
+filters: [../../../heart-hands/06.writing/remove-title-filter.lua]
+format: pdf
+linestretch: 1.25
+fontsize: "11pt"
+whitespace: small
+geometry:
+    - top=0.7in
+    - bottom=1in
+    - left=1in
+    - right=1in
+mainfont: "Times New Roman"
+execute:
+  echo: false
+  output: false
+  warning: false
+jupyter: python3
+bibliography: chem123-exp10-lab-report.bib
+csl: ../../../heart-hands/06.writing/citestyles/acs.csl
+---
+
+```{python}
+import pandas as pd
+from IPython.display import display
+```
+
+\vspace{-13pt}
+## Abstract
+\vspace{-13pt}
+The efficacy of dichloromethane washes to extract caffeine from cola was investigated. Using liquid-liquid extraction and varying the number of washes, this study attempted to determine the number of washes resulting in the maximum amount of extracted caffeine. Due to inconsistent results, no conclusive optimal number of washes was found.
+
+\vspace{-13pt}
+## Introduction
+\vspace{-13pt}
+Caffeine extraction from caffeinated beverages is an important process featuring in procedures such as decaffeination. The efficacy of an extraction is determined by the yield and the purity of the extracted caffeine. This experiment aimed to investigate the efficacy of dichloromethane (DCM) for extracting caffeine from a cola beverage, Pepsi Max. Dichloromethane (DCM) was chosen because caffeine is more soluble in it than water [@nussbaumExperiment10Overview] and because it has a low boiling point of 39.81ºC [@crchandbookofchemistryandphysicsCRCHandbookChemistry], allowing it to be easily evaporated away from caffeine without significant heating. Finally, previous studies have shown DCM to be a highly effective solvent for extracting caffeine from beverages, removing 96.2% of caffeine from green tea in 3 washes [@choungComparisonExtractionIsolation2014].
+
+It was hypothesized that three smaller extractions of caffeine from cola using dichloromethane would give a higher yield than two larger extractions, due to the partitioning of caffeine between the two phases of extraction [@nussbaumExperiment10Overview]. Given that the melting point of caffeine is 236.1ºC,the purity of the extracted caffeine could also be easily analyzed via melting point analysis [@crchandbookofchemistryandphysicsCRCHandbookChemistry].
+
+```{python}
+df_2_wash = pd.read_csv('2-wash-data.csv')
+df_3_wash = pd.read_csv('3-wash-data.csv')
+melting_points_df = pd.read_csv('melting-point-data.csv')
+```
+
+\vspace{-13pt}
+## Experimental
+\vspace{-13pt}
+Under a fume hood, a liquid-liquid extraction was performed using Pepsi Max and dichloromethane in a separatory funnel. 10% ammonium hydroxide was added to the cola in order to keep unwanted acids in the aqueous layer. 2 washes were performed, each using 15mL of DCM in the separatory funnel. A gravity filtration was then performed on the resulting mixture of DCM and caffeine to remove any residual water. The DCM was then removed from the caffeine via rotary evaporation. Any residual DCM was removed via vacuum, which was also used to cool the caffeine to room temperature. Weighing by difference was used to determine the yield of the caffeine extraction using a pre-weighed flask. A vacuum sublimation was performed to purify the extracted caffeine. The crude caffeine, purified caffeine, and manufacturer pure caffeine were compared via melting point analysis.
+
+\vspace{-13pt}
+## Results
+\vspace{-13pt}
+
+```{python}
+#| output: true
+#| layout-ncol: 3
+#| tbl-cap: 
+#|   - "Caffeine from 2 washes"
+#|   - "Caffeine from 3 washes"
+#|   - "Melting point analysis"
+#| tbl-pos: H
+df_2_wash['Caffeine (mg/L)'] = (df_2_wash['Caffeine (mg)'] / 0.05) / 2
+df_3_wash['Caffeine (mg/L)'] = (df_3_wash['Caffeine (mg)'] / 0.05) / 2
+df_2_wash = df_2_wash.drop(columns=['Caffeine (mg)'])
+df_3_wash = df_3_wash.drop(columns=['Caffeine (mg)'])
+
+df_2_wash_avg = pd.DataFrame([
+    ['Mean', df_2_wash['Caffeine (mg/L)'].mean()],
+    ['Median', df_2_wash['Caffeine (mg/L)'].median()]
+], columns=df_2_wash.columns)
+df_2_wash = df_2_wash.append(df_2_wash_avg)
+
+df_3_wash_avg = pd.DataFrame([
+    ['Mean', df_3_wash['Caffeine (mg/L)'].mean()],
+    ['Median', df_3_wash['Caffeine (mg/L)'].median()]
+], columns=df_3_wash.columns)
+df_3_wash = df_3_wash.append(df_3_wash_avg)
+
+display(df_2_wash.style.set_precision(2).hide_index())
+display(df_3_wash.style.set_precision(2).hide_index())
+display(melting_points_df.style.hide_index())
+```
+
+As shown in Tbl. 1, no clear optimal number of washes was found. Tbl. 2 shows the melting points of the caffeine samples; the crude caffeine had a higher melting point than the purified caffeine, which had a lower melting point than the pure manufacturer caffeine.
+
+\vspace{-13pt}
+## Discussion
+\vspace{-13pt}
+
+The amount of extracted caffeine varied highly between samples. The mean amount of caffeine extracted was higher for the 2 washes than for 3 washes, suggesting that 2 washes gives a higher yield. However, as the data is highly varied, it may be more accurate to use the median for comparison; doing so suggests that 3 washes is the more optimal wash count. Thus, the hypothesis was not supported, as it was unclear whether two large extractions or three small extractions gave a higher yield of extracted caffeine. This does not agree with previous studies stating the efficacy of 3 washes of DCM for extracting DCM [@choungComparisonExtractionIsolation2014], or theoretical calculations [@nussbaumExperiment10Overview]. The high variation in extracted caffeine can be attributed to the procedure being carried out by multiple people. Each bench was responsible for one sample, and changes in procedure between each bench as well as procedural errors could have contributed to the variance in results. For example, some benches did not "wet" the filter paper with DCM before performing the gravity filtration. This could have resulted in residual cola remaining in the final caffeine sample. The melting point of the crude extracted caffeine was higher than that of the purified caffeine. This likely indicates some residual compounds from the cola in the crude sample that were not easily removable using the experimental procedure. However, the melting point of the purified caffeine was lower than that of the pure manufacturer caffeine, suggesting that the purification process using vacuum sublimation was still unable to completely purify the extracted caffeine.
+
+Future studies could improve on this experiment by standardizing the procedure further amongst lab members, or by consolidating the procedure to fewer lab members so that the results of procedural errors would be less likely to aggregate and cause large variances in the data.
+
+\vspace{-13pt}
+## Conclusion
+\vspace{-13pt}
+No clear optimal number of washes was found, contradicting the hypothesis. It is unclear whether two large extractions or three smaller extractions is more effective for the extraction of caffeine from Pepsi Max using dichloromethane.
+
+\vspace{-13pt}
+## Bibliography
+\vspace{-13pt}
+::: {#refs}
+:::
+
+\newpage
+
+## Appendix
+
+### Example Calculations
+
+#### Calculation for amount of crude caffeine in cola product
+- Amount of crude caffeine per 50mL of cola: $42.00mg$ (from D39)
+- Amount of crude caffeine per 1L of cola: $\dfrac{42.00mg}{0.05L} = 840mg$
+- Accounting for the halving of cola volume during pre-processing: $\dfrac{840mg}{2} = 420mg$
