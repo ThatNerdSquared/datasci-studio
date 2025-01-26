@@ -1,0 +1,151 @@
+---
+title: chem123 exp11 analysis
+filters: [../../../heart-hands/06.writing/remove-title-filter.lua]
+format: pdf
+linestretch: 1.25
+fontsize: "11pt"
+whitespace: small
+geometry:
+    - top=1in
+    - bottom=1in
+    - left=0.9in
+    - right=0.9in
+mainfont: "Times New Roman"
+execute:
+  echo: false
+  output: false
+  warning: false
+jupyter: python3
+bibliography: chem123-exp11-lab-report.bib
+csl: ../../../heart-hands/06.writing/citestyles/acs.csl
+---
+
+```{python}
+import pandas as pd
+```
+
+```{python}
+pd.set_option('display.float_format', '{:.4g}'.format)
+DYE_CONC = 8 * (10 ** -6)
+BLEACH_CONC_LOW = 0.37
+BLEACH_CONC_HIGH = 0.74
+DYE_CONC_INSOL = 6.4 * (10 ** -6)
+BLEACH_CONC_LOW_INSOL = 0.074
+BLEACH_CONC_HIGH_INSOL = 0.148
+```
+
+\vspace{-13pt}
+## Abstract
+\vspace{-13pt}
+The rate law and reaction order of a dye-bleach reaction was investigated. Using spectrophotometry, the change of concentration for dye and change in speed of reaction at different bleach concentrations were studied. The reaction was determined to be second order overall, first order with respect to dye, and first order with respect to bleach.
+
+\vspace{-13pt}
+## Introduction
+\vspace{-13pt}
+The order of a reaction is an important detail to know, as it provides information about how changes in reactant concentrations can affect the overall rate of the reaction. One way to determine the order of a reaction is through spectrophotometry. By measuring the absorbance of a reaction solution over time as it goes from coloured to colourless, the rate of the reaction can be determined [@nussbaumExperiment11Overview]. This experiment aimed to investigate a dye-bleach reaction, specifically with the dye Blue #1. This is a common experiment; previous studies have shown spectrophotometry to be effective at determine the rate and order of dye-bleach reactions with dyes such as Red #3 [@henaryInexpensiveKineticStudy2007].
+
+In this study, spectrophotometry was tested as a method for determining the order and rate of a Blue #1 dye-bleach reaction.  It was hypothesized that the reaction would be second order overall, first order with respect to dye, and first order with respect to bleach.
+
+```{python}
+data = pd.read_csv('group-data.csv', index_col='Comp')
+```
+
+\vspace{-13pt}
+## Experimental
+\vspace{-13pt}
+
+$8.0 \cdot 10^{-6}$M Blue #1 and 0.37M bleach were mixed in a 10mL solution, and the volumes adjusted until a visual reaction time of roughly 2 minutes was reached (at 8mL of dye and 2mL of bleach). The analytical wavelength of the dye was determined, and kinetic traces were generated from further dye-bleach reaction solutions at this wavelength. The order of the reaction with respect to dye was determined by plotting out the kinetic trace data according to the different rate laws and observing which had the highest $R^2$ value. The order of the reaction with respect to bleach was determined by repeating the process with 0.74M bleach (double the concentration), and observing the change in reaction rate. Five 10.0mL standard dye dilutions were made, from which a Beer's Law plot was created to convert absorbance data to concentration. $k'$ (psuedo rate constant) values were collected for each kinetic trace and averaged - from these, the $k$ (rate constant) value was determined.
+
+```{python}
+data = data.dropna()
+data.loc['Avg'] = data.mean()
+```
+
+\vspace{-13pt}
+## Results
+\vspace{-13pt}
+
+::: {layout-ncol=2}
+|             | Avg ($M^{-1}s^{-1}$) |
+|:-----------:|:--------------------:|
+| $k$ (0.37M) | `{python} data.loc['Avg']['$k$ ($m^{-1}s^{-1}$) 0.37M'].round(4)` |
+| $k$ (0.74M) | `{python} data.loc['Avg']['$k$ ($m^{-1}s^{-1}$) 0.74M'].round(4)` |
+
+: Average $k$ values for each bleach concentration used.
+
+| Compound  | Reaction Order |
+|:---------:|:--------------:|
+| Dye       | 1              |
+| Bleach    | 1              |
+| *Overall* | 2              |
+
+: Reaction orders overall and with respect to each reactant.
+:::
+
+```{python}
+#| output: true
+#| tbl-cap: Reaction rates at $[dye]_0$ and $0.5 \cdot [dye]_0$.
+inst_rxn_rates_df = pd.DataFrame({
+  '[dye] (M)': [DYE_CONC_INSOL, DYE_CONC_INSOL / 2],
+})
+inst_rxn_rates_df['Rxn. Rate (M/s)'] = (
+  data.loc[20][1]
+  * inst_rxn_rates_df['[dye] (M)']
+  * BLEACH_CONC_HIGH_INSOL
+)
+inst_rxn_rates_df
+```
+
+The average $k$ value was found to be greater when using $0.74M$ bleach, as opposed to when $0.37M$ was used. The reaction was found to be second order overall.
+
+\vspace{-13pt}
+## Discussion
+\vspace{-13pt}
+The Blue #1 dye-bleach reaction was found to be second order overall, first order with respect to bleach, and first order with respect to dye. This supports the original hypothesis. It is also consistent with the results of previous studies, which show second-order reactions for other dyes such as Red #3 [@henaryInexpensiveKineticStudy2007]. These resulting reaction orders also align with the actual behaviour of the reaction rate. At $[dye]_2 = \dfrac{1}{2}[dye]_1$, the reaction rate is roughly half as fast.
+
+The results of this experiment show that spectrophotometry is a viable method for determining the order and rate of a reaction. The order of a coloured reactant can be determined from kinetic trace, by measuring the absorbance of the reaction solution at the analytical wavelength of the reactant. As the concentration of the reactant decreases, so does the absorbance of the solution, a relationship easily quantified via Beer's Law plot. The data points can then be plotted with various axes corresponding to different integrated rate laws, allowing an easy visual indicator of which rate law gives a strongest $R^2$ value for the given data. The $k'$ values can be easily determined from the slope of the graphs. The order of the reaction with respect to the non-coloured reactant are easily determined via the Method of Initial Rates - as the concentration doubles, so does the reaction rate.
+
+One flaw of the experiment was that there were inconsistencies in the calculated $k$ values between the different lab benches. As the serological pipets do not go up to 4 significant figures, the experiment was likely not precise enough to produce a consistent result. Future experiments could improve on this study by using a standardized volume of bleach and dye for each lab bench. As each bench decided on their own volume of bleach and dye to use in the reaction, inconsistencies were introduced which may have led to the differing average $k$ values across benches.
+
+\vspace{-13pt}
+## Conclusion
+\vspace{-13pt}
+The dye-bleach reaction was found to be second order overall, and first order with respect to dye and bleach. This supports the hypothesis and aligns with the results of previous studies, showing that spectrophotometry is a useful method for determining reaction orders and rates.
+
+\vspace{-13pt}
+## Bibliography
+\vspace{-13pt}
+::: {#refs}
+:::
+
+## Appendix
+
+### Example Calculations
+
+#### Calculation for determining $k$, given $k'$ and [bleach]
+We are told that:
+$$
+k' = k[\text{bleach}]
+$$
+
+Then, for $0.74M$ bleach ($0.148M$ in solution) with an average $k' = 0.04963$:
+\begin{align*}
+  k &= \dfrac{k'}{[\text{bleach}]} \\
+  &= \dfrac{0.04963}{0.148} \\
+  &= 0.3353 M^{-1}s^{-1}\\
+\end{align*}
+
+#### Calculation for reaction rates
+We now know that the rate law for the dye-bleach reaction is: $rate = k[\text{dye}][\text{bleach}]$.
+
+Then the rate of the reaction at the start of reaction with $0.74M$ bleach is:
+\begin{align*}
+  rate &= 0.3333 \cdot (6.4 \cdot 10^{-6}) \cdot 0.148 \\
+  &= 3.176 \cdot 10^{-7} M \cdot s^{-1}\\
+\end{align*}
+
+And at the halfway point of the reaction, with half the concentration of dye:
+\begin{align*}
+  rate &= 0.3333 \cdot (3.2 \cdot 10^{-6}) \cdot 0.148 \\
+  &= 1.588 \cdot 10^{-7} M \cdot s^{-1}\\
+\end{align*}
